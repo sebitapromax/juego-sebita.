@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sebita Escapa del Búho</title>
     <style>
         body {
@@ -13,18 +13,20 @@
         }
         canvas {
             display: block;
+            width: 100vw; /* Ancho del canvas igual al ancho de la pantalla */
+            height: 100vh; /* Alto del canvas igual al alto de la pantalla */
         }
         #startButton {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            padding: 15px 30px;
-            font-size: 2vw; /* Tamaño de fuente relativo al ancho de la pantalla */
+            padding: 3vw; /* Tamaño relativo al ancho de la pantalla */
+            font-size: 5vw; /* Tamaño de fuente relativo al ancho de la pantalla */
             color: white;
             background-color: #007BFF;
             border: none;
-            border-radius: 5px;
+            border-radius: 10px;
             cursor: pointer;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
         }
@@ -33,12 +35,13 @@
         }
         #score {
             position: absolute;
-            top: 2%; /* Posición relativa al alto de la pantalla */
-            left: 2%; /* Posición relativa al ancho de la pantalla */
-            font-size: 3vw; /* Tamaño de fuente relativo al ancho de la pantalla */
+            top: 2vh; /* Posición relativa al alto de la pantalla */
+            left: 2vw; /* Posición relativa al ancho de la pantalla */
+            font-size: 6vw; /* Tamaño de fuente relativo al ancho de la pantalla */
             color: white;
             font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Sombra para mejorar la visibilidad */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8); /* Sombra para mejorar la visibilidad */
+            z-index: 10; /* Asegurar que esté por encima del canvas */
         }
     </style>
 </head>
@@ -52,8 +55,13 @@
     const startButton = document.getElementById('startButton');
     const scoreDisplay = document.getElementById('score');
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    // Ajustar el tamaño del canvas dinámicamente
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
 
     const sebita = {
         x: canvas.width / 2,
@@ -149,11 +157,6 @@
         const touch = e.touches[0];
         sebita.x = touch.clientX;
         sebita.y = touch.clientY;
-    });
-
-    window.addEventListener('resize', () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
     });
 
     // Iniciar el juego cuando el usuario haga clic en el botón
