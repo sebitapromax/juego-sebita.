@@ -9,17 +9,37 @@
             margin: 0;
             overflow: hidden;
             background-color: #87CEEB;
+            font-family: Arial, sans-serif;
         }
         canvas {
             display: block;
+        }
+        #startButton {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 15px 30px;
+            font-size: 20px;
+            color: white;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+        #startButton:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
 <canvas id="gameCanvas"></canvas>
+<button id="startButton">Iniciar Juego</button>
 <script>
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
+    const startButton = document.getElementById('startButton');
 
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -42,6 +62,8 @@
         speed: 3
     };
     buho.image.src = 'buho.png'; // Imagen local para el búho
+
+    let gameStarted = false; // Variable para controlar si el juego ha comenzado
 
     function drawImage(obj) {
         ctx.drawImage(obj.image, obj.x - obj.width / 2, obj.y - obj.height / 2, obj.width, obj.height);
@@ -74,9 +96,13 @@
         sebita.y = canvas.height / 2;
         buho.x = Math.random() * canvas.width;
         buho.y = Math.random() * canvas.height;
+        gameStarted = false; // Detener el juego después de reiniciarlo
+        startButton.style.display = 'block'; // Mostrar el botón nuevamente
     }
 
     function update() {
+        if (!gameStarted) return; // Si el juego no ha comenzado, no actualices
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         // Dibujar las imágenes solo si están cargadas
@@ -90,11 +116,13 @@
     }
 
     canvas.addEventListener('mousemove', (e) => {
+        if (!gameStarted) return; // Si el juego no ha comenzado, no muevas a Sebita
         sebita.x = e.clientX;
         sebita.y = e.clientY;
     });
 
     canvas.addEventListener('touchmove', (e) => {
+        if (!gameStarted) return; // Si el juego no ha comenzado, no muevas a Sebita
         e.preventDefault();
         const touch = e.touches[0];
         sebita.x = touch.clientX;
@@ -106,8 +134,15 @@
         canvas.height = window.innerHeight;
     });
 
-    // Iniciar el juego cuando ambas imágenes estén cargadas
-    Promise.all([new Promise(resolve => sebita.image.onload = resolve), new Promise(resolve => buho.image.onload = resolve)]).then(update);
+    // Iniciar el juego cuando el usuario haga clic en el botón
+    startButton.addEventListener('click', () => {
+        gameStarted = true; // Activar el juego
+        startButton.style.display = 'none'; // Ocultar el botón
+        update(); // Comenzar la animación
+    });
+
+    // Cargar las imágenes antes de iniciar
+    Promise.all([new Promise(resolve => sebita.image.onload = resolve), new Promise(resolve => buho.image.onload = resolve)]);
 </script>
 </body>
 </html>
