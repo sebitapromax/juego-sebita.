@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sebita Escapa del Búho</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #87CEEB;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<canvas id="gameCanvas"></canvas>
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const sebita = {
+        x: canvas.width / 2,
+        y: canvas.height / 2,
+        width: 50,
+        height: 50,
+        image: new Image()
+    };
+    sebita.image.src = 'sebita.png'; // Imagen local para Sebita
+
+    const buho = {
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        width: 70,
+        height: 70,
+        image: new Image(),
+        speed: 3
+    };
+    buho.image.src = 'buho.png'; // Imagen local para el búho
+
+    function drawImage(obj) {
+        ctx.drawImage(obj.image, obj.x - obj.width / 2, obj.y - obj.height / 2, obj.width, obj.height);
+    }
+
+    function moveBuho() {
+        const dx = sebita.x - buho.x;
+        const dy = sebita.y - buho.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance > buho.speed) {
+            buho.x += (dx / distance) * buho.speed;
+            buho.y += (dy / distance) * buho.speed;
+        }
+    }
+
+    function checkCollision() {
+        const dx = sebita.x - buho.x;
+        const dy = sebita.y - buho.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < sebita.width / 2 + buho.width / 2) {
+            alert('¡El búho atrapó a Sebita!');
+            resetGame();
+        }
+    }
+
+    function resetGame() {
+        sebita.x = canvas.width / 2;
+        sebita.y = canvas.height / 2;
+        buho.x = Math.random() * canvas.width;
+        buho.y = Math.random() * canvas.height;
+    }
+
+    function update() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Dibujar las imágenes solo si están cargadas
+        if (sebita.image.complete) drawImage(sebita);
+        if (buho.image.complete) drawImage(buho);
+
+        moveBuho();
+        checkCollision();
+
+        requestAnimationFrame(update);
+    }
+
+    canvas.addEventListener('mousemove', (e) => {
+        sebita.x = e.clientX;
+        sebita.y = e.clientY;
+    });
+
+    canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        sebita.x = touch.clientX;
+        sebita.y = touch.clientY;
+    });
+
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+
+    // Iniciar el juego cuando ambas imágenes estén cargadas
+    Promise.all([new Promise(resolve => sebita.image.onload = resolve), new Promise(resolve => buho.image.onload = resolve)]).then(update);
+</script>
+</body>
+</html>
