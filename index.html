@@ -101,7 +101,7 @@
     }
 
     function update() {
-        if (!gameStarted) return; // Si el juego no ha comenzado, no actualices
+        if (!gameStarted) return; // Si el juego no ha comenzado, detener la ejecución
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -116,13 +116,13 @@
     }
 
     canvas.addEventListener('mousemove', (e) => {
-        if (!gameStarted) return; // Si el juego no ha comenzado, no muevas a Sebita
+        if (!gameStarted) return; // Si el juego no ha comenzado, no mover a Sebita
         sebita.x = e.clientX;
         sebita.y = e.clientY;
     });
 
     canvas.addEventListener('touchmove', (e) => {
-        if (!gameStarted) return; // Si el juego no ha comenzado, no muevas a Sebita
+        if (!gameStarted) return; // Si el juego no ha comenzado, no mover a Sebita
         e.preventDefault();
         const touch = e.touches[0];
         sebita.x = touch.clientX;
@@ -136,9 +136,11 @@
 
     // Iniciar el juego cuando el usuario haga clic en el botón
     startButton.addEventListener('click', () => {
-        gameStarted = true; // Activar el juego
-        startButton.style.display = 'none'; // Ocultar el botón
-        update(); // Comenzar la animación
+        if (!gameStarted) { // Asegurarse de que el juego no haya comenzado ya
+            gameStarted = true; // Activar el juego
+            startButton.style.display = 'none'; // Ocultar el botón
+            update(); // Comenzar la animación
+        }
     });
 
     // Cargar las imágenes antes de iniciar
