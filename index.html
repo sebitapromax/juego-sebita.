@@ -31,15 +31,25 @@
         #startButton:hover {
             background-color: #0056b3;
         }
+        #score {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 24px;
+            color: white;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
 <canvas id="gameCanvas"></canvas>
+<div id="score">Tiempo: 00:00</div>
 <button id="startButton">Iniciar Juego</button>
 <script>
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
     const startButton = document.getElementById('startButton');
+    const scoreDisplay = document.getElementById('score');
 
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -64,6 +74,8 @@
     buho.image.src = 'buho.png'; // Imagen local para el búho
 
     let gameStarted = false; // Variable para controlar si el juego ha comenzado
+    let score = 0; // Puntaje en segundos
+    let scoreInterval; // Intervalo para actualizar el puntaje
 
     function drawImage(obj) {
         ctx.drawImage(obj.image, obj.x - obj.width / 2, obj.y - obj.height / 2, obj.width, obj.height);
@@ -97,7 +109,16 @@
         buho.x = Math.random() * canvas.width;
         buho.y = Math.random() * canvas.height;
         gameStarted = false; // Detener el juego después de reiniciarlo
+        score = 0; // Reiniciar el puntaje
+        updateScoreDisplay(); // Actualizar el puntaje en pantalla
+        clearInterval(scoreInterval); // Detener el intervalo del puntaje
         startButton.style.display = 'block'; // Mostrar el botón nuevamente
+    }
+
+    function updateScoreDisplay() {
+        const minutes = Math.floor(score / 60).toString().padStart(2, '0'); // Minutos con formato 00
+        const seconds = (score % 60).toString().padStart(2, '0'); // Segundos con formato 00
+        scoreDisplay.textContent = `Tiempo: ${minutes}:${seconds}`;
     }
 
     function update() {
@@ -139,6 +160,12 @@
         if (!gameStarted) { // Asegurarse de que el juego no haya comenzado ya
             gameStarted = true; // Activar el juego
             startButton.style.display = 'none'; // Ocultar el botón
+            score = 0; // Reiniciar el puntaje
+            updateScoreDisplay(); // Actualizar el puntaje en pantalla
+            scoreInterval = setInterval(() => {
+                score++; // Incrementar el puntaje cada segundo
+                updateScoreDisplay(); // Actualizar el puntaje en pantalla
+            }, 1000); // Actualizar cada 1000 ms (1 segundo)
             update(); // Comenzar la animación
         }
     });
